@@ -1,13 +1,20 @@
+import { cookies } from "next/headers";
 import { BarChart3, Mail } from "lucide-react";
 import { getLeads } from "@/app/actions/leads";
 import { getProducts } from "@/app/actions/products";
 import { LeadList } from "@/components/admin/LeadList";
 import { ProductManager } from "@/components/admin/ProductManager";
 import { LogoutButton } from "@/components/admin/LogoutButton";
+import { LoginForm } from "@/components/admin/LoginForm";
 
 export const runtime = 'edge';
 
 export default async function AdminDashboard() {
+  const cookieStore = await cookies();
+  if (cookieStore.get('admin_session')?.value !== 'authenticated') {
+    return <LoginForm />;
+  }
+
   const [leadsRes, productsRes] = await Promise.all([
     getLeads(),
     getProducts()

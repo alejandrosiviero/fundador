@@ -2,12 +2,10 @@
 
 import { useState } from "react";
 import { login } from "@/app/actions/auth";
-import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+export function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -18,7 +16,7 @@ export default function LoginPage() {
     const result = await login(formData);
 
     if (result.success) {
-      router.push("/admin");
+      window.location.reload(); // Recarga para renderizar el Dashboard protegido
     } else {
       setError(result.error || "Error al iniciar sesión");
       setLoading(false);
