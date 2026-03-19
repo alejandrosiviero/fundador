@@ -1,6 +1,21 @@
-import { Users, Mail, ShoppingBag, BarChart3, LogOut } from "lucide-react";
+import { BarChart3, Mail } from "lucide-react";
+import { getLeads } from "@/app/actions/leads";
+import { getProducts } from "@/app/actions/products";
+import { LeadList } from "@/components/admin/LeadList";
+import { ProductManager } from "@/components/admin/ProductManager";
+import { LogoutButton } from "@/components/admin/LogoutButton";
 
-export default function AdminDashboard() {
+export const runtime = 'edge';
+
+export default async function AdminDashboard() {
+  const [leadsRes, productsRes] = await Promise.all([
+    getLeads(),
+    getProducts()
+  ]);
+
+  const leads = leadsRes.success ? leadsRes.leads : [];
+  const products = productsRes.success ? productsRes.products : [];
+
   return (
     <div className="min-h-screen bg-zinc-50 flex flex-col md:flex-row font-sans">
       {/* Sidebar Privada (Simulada) */}
@@ -9,62 +24,28 @@ export default function AdminDashboard() {
           <h2 className="text-2xl font-bold font-serif">Fundador Admin</h2>
         </div>
         <nav className="flex-1 p-4 flex flex-col gap-2">
-          <a href="#" className="flex items-center gap-3 px-4 py-3 bg-[#A11126] rounded-xl text-white transition-colors">
+          <div className="flex items-center gap-3 px-4 py-3 bg-[#A11126] rounded-xl text-white">
             <BarChart3 className="w-5 h-5" />
-            <span>Dashboard</span>
-          </a>
-          <a href="#" className="flex items-center gap-3 px-4 py-3 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-colors">
-            <Users className="w-5 h-5" />
-            <span>Leads (WhatsApp)</span>
-          </a>
-          <a href="#" className="flex items-center gap-3 px-4 py-3 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-colors">
-            <Mail className="w-5 h-5" />
-            <span>Alias de Correos</span>
-          </a>
-          <a href="#" className="flex items-center gap-3 px-4 py-3 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-colors">
-            <ShoppingBag className="w-5 h-5" />
-            <span>E-Commerce</span>
-          </a>
+            <span>Dashboard Principal</span>
+          </div>
         </nav>
         <div className="p-4 border-t border-zinc-800">
-          <button className="flex w-full items-center gap-3 px-4 py-3 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-colors">
-            <LogOut className="w-5 h-5" />
-            <span>Cerrar Sesión</span>
-          </button>
+          <LogoutButton />
         </div>
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 p-8 lg:p-12 overflow-y-auto">
         <header className="mb-10 text-zinc-900">
-          <h1 className="text-3xl font-bold font-serif">Dashboard Principal</h1>
-          <p className="text-zinc-500 mt-2">Bienvenido al panel de control de Fundador B2B.</p>
+          <h1 className="text-3xl font-bold font-serif">Dashboard Comercial</h1>
+          <p className="text-zinc-500 mt-2">Visión general en tiempo real de Leads y Catálogo D1.</p>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          
-          {/* Módulo Leads */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-zinc-800">Últimos Leads (WhatsApp)</h3>
-              <Users className="w-5 h-5 text-zinc-400" />
-            </div>
-            <div className="space-y-4">
-              {/* Ejemplo conceptual */}
-              <div className="flex justify-between items-center py-3 border-b border-zinc-100">
-                <span className="text-sm text-zinc-600">Hace 2 horas</span>
-                <span className="text-xs font-medium bg-green-100 text-green-700 px-3 py-1 rounded-full">whatsapp_click</span>
-              </div>
-              <div className="flex justify-between items-center py-3 border-b border-zinc-100">
-                <span className="text-sm text-zinc-600">Hace 5 horas</span>
-                <span className="text-xs font-medium bg-green-100 text-green-700 px-3 py-1 rounded-full">whatsapp_click</span>
-              </div>
-            </div>
-            <button className="mt-6 text-sm text-[#A11126] font-medium hover:underline inline-flex items-center gap-1">Ver reporte completo &rarr;</button>
-          </div>
+          <LeadList leads={leads as any[]} />
 
-          {/* Módulo Correos */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
+          {/* Módulo Correos (Solo visual) */}
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200 lg:col-span-1">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-zinc-800">Gestión de Correos</h3>
               <Mail className="w-5 h-5 text-zinc-400" />
@@ -74,32 +55,13 @@ export default function AdminDashboard() {
             </p>
             <ul className="space-y-3 mb-6">
               <li className="text-sm flex justify-between items-center py-2 border-b border-zinc-100">
-                <span className="font-medium">marketing@</span> 
-                <span className="text-xs font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded">Activo</span>
-              </li>
-              <li className="text-sm flex justify-between items-center py-2 border-b border-zinc-100">
-                <span className="font-medium">ventas@</span> 
-                <span className="text-xs font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded">Activo</span>
+                <span className="font-medium">hola@</span> 
+                <span className="text-xs font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded">Activo (Resend)</span>
               </li>
             </ul>
-            <button className="text-sm text-[#A11126] font-medium hover:underline">+ Añadir Alias</button>
           </div>
 
-          {/* Módulo E-Commerce (Futuro) */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200 bg-zinc-50/50 relative overflow-hidden">
-            <div className="absolute top-4 right-4 bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded-md">Módulo en Desarrollo</div>
-            <div className="flex items-center justify-between mb-4 mt-2">
-              <h3 className="font-bold text-zinc-500">E-Commerce</h3>
-              <ShoppingBag className="w-5 h-5 text-zinc-300" />
-            </div>
-            <p className="text-sm text-zinc-500 mb-6 font-medium">
-              Gestión de Productos, Categorías (Café, Máquinas, Combos) y pedidos.
-            </p>
-            <div className="h-24 border-2 border-dashed border-zinc-300 rounded-xl flex items-center justify-center bg-zinc-100">
-              <span className="text-sm text-zinc-500 font-medium tracking-wider uppercase">Próximamente</span>
-            </div>
-          </div>
-          
+          <ProductManager products={products as any[]} />
         </div>
       </main>
     </div>

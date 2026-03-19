@@ -1,24 +1,30 @@
 import { NextResponse } from 'next/server';
+import { getRequestContext } from "@cloudflare/next-on-pages";
 
 export const runtime = 'edge';
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body = (await request.json()) as { eventType?: string; sourceUrl?: string };
     const { eventType, sourceUrl } = body;
 
     if (!eventType) {
       return NextResponse.json({ error: 'Falta parámetro eventType' }, { status: 400 });
     }
 
-    // Aquí iría la lógica de integración con Cloudflare D1
-    // Por ejemplo, usando variables de entorno pasadas por @cloudflare/next-on-pages
-    // const env = getRequestContext().env;
-    // await env.DB.prepare('INSERT INTO leads (id, event_type, source_url) VALUES (?, ?, ?)')
-    //   .bind(crypto.randomUUID(), eventType, sourceUrl)
-    //   .run();
-
-    console.log(`[D1 Conceptual] Lead guardado: ${eventType} desde ${sourceUrl}`);
+    const { env } = getRequestContext();
+    await env.DB.prepare(
+      'INSERT INTO leads (id, name, email, interest, message, status) VALUES (?, ?, ?, ?, ?, ?)'
+    )
+      .bind(
+        crypto.randomUUID(),
+        'WhatsApp Contacto',
+        sourceUrl || 'landing',
+        eventType,
+        'Usuario hizo click en el botón de WhatsApp',
+        'contacted'
+      )
+      .run();
 
     return NextResponse.json({ success: true, message: 'Lead registrado exitosamente' }, { status: 200 });
   } catch (error) {

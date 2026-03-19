@@ -4,6 +4,6 @@ compatibility_flags = ["nodejs_compat"]
 
 [[d1_databases]]
 binding = "DB"
-database_name = "fundador-db"
-database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # Reemplazar con ID real
+database_name = "fundador_db"
+database_id = "a765c293-91bd-4980-97f2-0eddd3d99754"
 migrations_dir = "d1/migrations"
